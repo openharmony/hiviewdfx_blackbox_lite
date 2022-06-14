@@ -54,7 +54,7 @@ static void GetDirName(char *dirBuf, unsigned int dirBufSize, const char *path)
         return;
     }
 
-    char *end = path + strlen(path);
+    const char *end = path + strlen(path);
     while (*end != '/' && end >= path) {
         end--;
     }
@@ -142,6 +142,7 @@ static void SaveBasicErrorInfo(const char *filePath, struct ErrorInfo *info)
 
 static void* SaveErrorLog(void *param)
 {
+    (void)param;
     struct ErrorInfo *info = NULL;
     struct BBoxOps *ops = NULL;
     char dirName[PATH_MAX_LEN] = { 0 };
