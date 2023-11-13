@@ -1,4 +1,4 @@
-# hiviewdfx_blackbox
+# hiviewdfx_blackbox_lite
 
 -   [简介](#简介)
 -   [目录](#目录)
@@ -17,7 +17,7 @@ blackbox功能包括故障信息获取，故障日志保存，死机重启等功
 blackbox源代码目录结构如下：
 
 ```
-/base/hiviewdfx/blackbox.
+/base/hiviewdfx/blackbox_lite.
 ├── blackbox_adapter.c                          #平台适配
 ├── blackbox_core.c                             #blackbox核心代码
 ├── blackbox_detector.c
@@ -189,7 +189,7 @@ void RebootSystem(void);
 
 [DFX子系统](https://gitee.com/openharmony/docs/blob/master/zh-cn/readme/DFX%E5%AD%90%E7%B3%BB%E7%BB%9F.md)
 
-**hiviewdfx\_blackbox**
+**hiviewdfx\_blackbox\_lite**
 
 [hiviewdfx\_hidumper\_lite](https://gitee.com/openharmony/hiviewdfx_hidumper_lite/blob/master/README_zh.md)
 
