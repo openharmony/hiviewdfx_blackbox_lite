@@ -9,12 +9,12 @@
 
 ## 简介
 
-blackbox是帮助系统抓取保存LitOS死机重启故障现场信息的功能模块。
-blackbox功能包括故障信息获取，故障日志保存，死机重启等功能
+blackbox_lite是帮助系统抓取保存LitOS死机重启故障现场信息的功能模块。
+blackbox_lite功能包括故障信息获取，故障日志保存，死机重启等功能
 
 ## 目录
 
-blackbox源代码目录结构如下：
+blackbox_lite源代码目录结构如下：
 
 ```
 /base/hiviewdfx/blackbox_lite.
@@ -34,11 +34,11 @@ blackbox源代码目录结构如下：
 
 ## 运行流程
 
-blackbox运行流程如下：
+blackbox_lite运行流程如下：
 
 ![](figures/zh-cn_image_0000001644475773.png)
 
-blackbox在开机的时候由内核启动，运行SaveErrorLog线程检测是否有日志需要储存在日志文件中。
+blackbox_lite在开机的时候由内核启动，运行SaveErrorLog线程检测是否有日志需要储存在日志文件中。
 
 当开机以后BBoxInit和BBoxAdapterInit相继被初始化，重写的适配层函数被加载到blackbox_core。
 
