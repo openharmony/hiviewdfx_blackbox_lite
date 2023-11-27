@@ -1,17 +1,17 @@
 {
-    "name": "@ohos/blackbox",
-    "description": "blackbox provides the software blackbox capability.",
+    "name": "@ohos/blackbox_lite",
+    "description": "blackbox_lite provides the software blackbox capability.",
     "optional": "false",
     "version": "3.1",
     "license": "Apache License 2.0",
     "publishAs": "code-segment",
     "segment": {
-        "destPath": "base/hiviewdfx/blackbox"
+        "destPath": "base/hiviewdfx/blackbox_lite"
     },
     "dirs": {},
     "scripts": {},
     "component": {
-        "name": "blackbox",
+        "name": "blackbox_lite",
         "subsystem": "hiviewdfx",
         "adapted_system_type": [
             "mini",
@@ -28,7 +28,7 @@
         },
         "build": {
             "sub_component": [
-                "//base/hiviewdfx/blackbox:blackbox"
+                "//base/hiviewdfx/blackbox_lite:blackbox_lite"
             ]
         }
     }

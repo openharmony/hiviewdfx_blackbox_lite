@@ -1,4 +1,4 @@
-# hiviewdfx_blackbox
+# hiviewdfx_blackbox_lite
 
 -   [简介](#简介)
 -   [目录](#目录)
@@ -9,15 +9,15 @@
 
 ## 简介
 
-blackbox是帮助系统抓取保存LitOS死机重启故障现场信息的功能模块。
-blackbox功能包括故障信息获取，故障日志保存，死机重启等功能
+blackbox_lite是帮助系统抓取保存LitOS死机重启故障现场信息的功能模块。
+blackbox_lite功能包括故障信息获取，故障日志保存，死机重启等功能
 
 ## 目录
 
-blackbox源代码目录结构如下：
+blackbox_lite源代码目录结构如下：
 
 ```
-/base/hiviewdfx/blackbox.
+/base/hiviewdfx/blackbox_lite.
 ├── blackbox_adapter.c                          #平台适配
 ├── blackbox_core.c                             #blackbox核心代码
 ├── blackbox_detector.c
@@ -34,11 +34,11 @@ blackbox源代码目录结构如下：
 
 ## 运行流程
 
-blackbox运行流程如下：
+blackbox_lite运行流程如下：
 
 ![](figures/zh-cn_image_0000001644475773.png)
 
-blackbox在开机的时候由内核启动，运行SaveErrorLog线程检测是否有日志需要储存在日志文件中。
+blackbox_lite在开机的时候由内核启动，运行SaveErrorLog线程检测是否有日志需要储存在日志文件中。
 
 当开机以后BBoxInit和BBoxAdapterInit相继被初始化，重写的适配层函数被加载到blackbox_core。
 
@@ -189,7 +189,7 @@ void RebootSystem(void);
 
 [DFX子系统](https://gitee.com/openharmony/docs/blob/master/zh-cn/readme/DFX%E5%AD%90%E7%B3%BB%E7%BB%9F.md)
 
-**hiviewdfx\_blackbox**
+**hiviewdfx\_blackbox\_lite**
 
 [hiviewdfx\_hidumper\_lite](https://gitee.com/openharmony/hiviewdfx_hidumper_lite/blob/master/README_zh.md)
 

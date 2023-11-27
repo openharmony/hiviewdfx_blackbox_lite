@@ -13,7 +13,7 @@
 
 import("//build/lite/ndk/ndk.gni")
 
-static_library("blackbox") {
+static_library("blackbox_lite") {
   sources = [
     "blackbox_adapter.c",
     "blackbox_core.c",
@@ -23,8 +23,8 @@ static_library("blackbox") {
   cflags = [ "-Wall" ]
   deps = []
   include_dirs = [
-    "//base/hiviewdfx/blackbox",
-    "//base/hiviewdfx/blackbox/interfaces/native/kits",
+    "//base/hiviewdfx/blackbox_lite",
+    "//base/hiviewdfx/blackbox_lite/interfaces/native/kits",
     "//base/hiviewdfx/hiview_lite",
     "//base/hiviewdfx/hilog_lite/interfaces/native/kits/hilog_lite",
     "//commonlibrary/utils_lite/include",
