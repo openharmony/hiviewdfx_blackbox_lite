@@ -21,7 +21,7 @@
         "ram": "~5KB",
         "deps": {
             "components": [
-                "utils_base",
+                "c_utils",
                 "liteos_m"
             ],
             "third_party": []
