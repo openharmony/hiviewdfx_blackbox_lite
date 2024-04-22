@@ -14,8 +14,7 @@
         "name": "blackbox_lite",
         "subsystem": "hiviewdfx",
         "adapted_system_type": [
-            "mini",
-            "small"
+            "mini"
         ],
         "rom": "10KB",
         "ram": "~5KB",
