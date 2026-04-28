@@ -55,7 +55,7 @@ static void GetDirName(char *dirBuf, unsigned int dirBufSize, const char *path)
     }
 
     const char *end = path + strlen(path);
-    while (*end != '/' && end >= path) {
+    while (end >= path && *end != '/') {
         end--;
     }
     if (end >= path) {
