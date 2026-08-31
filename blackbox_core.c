@@ -18,22 +18,14 @@
 #include "blackbox_detector.h"
 #include "ohos_init.h"
 #include "ohos_types.h"
-#include "pthread.h"
+#include "cmsis_os2.h"
 #include "securec.h"
 #include "utils_list.h"
 
 /******************local macroes*********************/
 #define LOG_ROOT_DIR_WAIT_TIME  1000
 #define LOG_ROOT_DIR_WAIT_COUNT 1
-#ifndef LOS_WAIT_FOREVER
-#define LOS_WAIT_FOREVER        0xFFFFFFFF
-#endif
-#ifndef LOS_NO_WAIT
-#define LOS_NO_WAIT             0
-#endif
-#ifndef LOS_OK
-#define LOS_OK                  0
-#endif
+#define BLACKBOX_TASK_STACK_SIZE 0x1000
 
 /******************local prototypes******************/
 struct BBoxOps {
@@ -44,7 +36,7 @@ struct BBoxOps {
 /******************global functions*******************/
 /******************local variables*******************/
 static UTILS_DL_LIST_HEAD(g_opsList);
-static unsigned int g_opsListSem;
+static osSemaphoreId_t g_opsListSem;
 
 /******************function definitions*******************/
 static void GetDirName(char *dirBuf, unsigned int dirBufSize, const char *path)
@@ -104,7 +96,7 @@ static void WaitForLogRootDir(const char *rootDir)
     }
     BBOX_PRINT_INFO("wait for log root dir [%s] begin!\n", rootDir);
     while (i++ < LOG_ROOT_DIR_WAIT_COUNT) {
-        LOS_Msleep(LOG_ROOT_DIR_WAIT_TIME);
+        osDelay(LOG_ROOT_DIR_WAIT_TIME * osKernelGetTickFreq() / 1000);
     }
     BBOX_PRINT_INFO("wait for log root dir [%s] end!\n", rootDir);
 }
@@ -140,7 +132,7 @@ static void SaveBasicErrorInfo(const char *filePath, struct ErrorInfo *info)
         info->module, info->event);
 }
 
-static void* SaveErrorLog(void *param)
+static void SaveErrorLog(void *param)
 {
     (void)param;
     struct ErrorInfo *info = NULL;
@@ -150,15 +142,15 @@ static void* SaveErrorLog(void *param)
     info = malloc(sizeof(*info));
     if (info == NULL) {
         BBOX_PRINT_ERR("malloc failed!\n");
-        return NULL;
+        return;
     }
 
     GetDirName(dirName, sizeof(dirName), GetFaultLogPath());
     WaitForLogRootDir(dirName);
-    if (LOS_SemPend(g_opsListSem, LOS_WAIT_FOREVER) != 0) {
+    if (osSemaphoreAcquire(g_opsListSem, osWaitForever) != osOK) {
         BBOX_PRINT_ERR("Request g_opsListSem failed!\n");
         free(info);
-        return NULL;
+        return;
     }
     UTILS_DL_LIST_FOR_EACH_ENTRY(ops, &g_opsList, struct BBoxOps, opsList) {
         if (ops == NULL) {
@@ -182,10 +174,8 @@ static void* SaveErrorLog(void *param)
             }
         }
     }
-    (void)LOS_SemPost(g_opsListSem);
+    (void)osSemaphoreRelease(g_opsListSem);
     free(info);
-
-    return NULL;
 }
 
 #ifdef BLACKBOX_DEBUG
@@ -221,7 +211,7 @@ int BBoxRegisterModuleOps(struct ModuleOps *ops)
     }
     (void)memset_s(newOps, sizeof(*newOps), 0, sizeof(*newOps));
     (void)memcpy_s(&newOps->ops, sizeof(newOps->ops), ops, sizeof(*ops));
-    if (LOS_SemPend(g_opsListSem, LOS_WAIT_FOREVER) != 0) {
+    if (osSemaphoreAcquire(g_opsListSem, osWaitForever) != osOK) {
         BBOX_PRINT_ERR("Request g_opsListSem failed!\n");
         free(newOps);
         return -1;
@@ -232,7 +222,7 @@ int BBoxRegisterModuleOps(struct ModuleOps *ops)
     UTILS_DL_LIST_FOR_EACH_ENTRY(temp, &g_opsList, struct BBoxOps, opsList) {
         if (strcmp(temp->ops.module, ops->module) == 0) {
             BBOX_PRINT_ERR("[%s] has been registered!\n", ops->module);
-            (void)LOS_SemPost(g_opsListSem);
+            (void)osSemaphoreRelease(g_opsListSem);
             free(newOps);
             return -1;
         }
@@ -241,7 +231,7 @@ int BBoxRegisterModuleOps(struct ModuleOps *ops)
 __out:
     BBOX_PRINT_INFO("[%s] is registered successfully!\n", ops->module);
     UtilsListTailInsert(&g_opsList, &newOps->opsList);
-    (void)LOS_SemPost(g_opsListSem);
+    (void)osSemaphoreRelease(g_opsListSem);
 #ifdef BLACKBOX_DEBUG
     PrintModuleOps();
 #endif
@@ -268,7 +258,7 @@ int BBoxNotifyError(const char event[EVENT_MAX_LEN],
     GetDirName(dirName, sizeof(dirName), GetFaultLogPath());
     if (needSysReset == 0) {
         WaitForLogRootDir(dirName);
-        if (LOS_SemPend(g_opsListSem, LOS_NO_WAIT) != 0) {
+        if (osSemaphoreAcquire(g_opsListSem, 0U) != osOK) {
             BBOX_PRINT_ERR("Request g_opsListSem failed!\n");
             goto __out;
         }
@@ -301,7 +291,7 @@ int BBoxNotifyError(const char event[EVENT_MAX_LEN],
         break;
     }
     if (needSysReset == 0) {
-        (void)LOS_SemPost(g_opsListSem);
+        (void)osSemaphoreRelease(g_opsListSem);
     }
 
 __out:
@@ -317,17 +307,18 @@ __out:
 
 static void BBoxInit(void)
 {
-    int ret = -1;
-    pthread_t taskId = 0;
+    osThreadAttr_t taskAttr = {
+        "BlackBoxTask", 0, NULL, 0, NULL, BLACKBOX_TASK_STACK_SIZE, osPriorityNormal, 0, 0
+    };
 
-    if (LOS_BinarySemCreate(1, &g_opsListSem) != LOS_OK) {
+    g_opsListSem = osSemaphoreNew(1, 1, NULL);
+    if (g_opsListSem == NULL) {
         BBOX_PRINT_ERR("Create binary semaphore failed!\n");
         return;
     }
     UtilsListInit(&g_opsList);
-    ret = pthread_create(&taskId, NULL, SaveErrorLog, NULL);
-    if (ret != 0) {
-        BBOX_PRINT_ERR("Falied to create SaveErrorLog task, ret: %d\n", ret);
+    if (osThreadNew(SaveErrorLog, NULL, &taskAttr) == NULL) {
+        BBOX_PRINT_ERR("Falied to create SaveErrorLog task\n");
     }
 }
 CORE_INIT_PRI(BBoxInit, 1);
