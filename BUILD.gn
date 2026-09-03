@@ -23,7 +23,6 @@ static_library("blackbox_lite") {
   cflags = [ "-Wall" ]
   deps = []
   include_dirs = [
-    "//third_party/cmsis/CMSIS/RTOS2/Include",
     "//base/hiviewdfx/blackbox_lite",
     "//base/hiviewdfx/blackbox_lite/interfaces/native/kits",
     "//base/hiviewdfx/hiview_lite",

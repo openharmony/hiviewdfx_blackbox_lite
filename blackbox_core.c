@@ -25,7 +25,6 @@
 /******************local macroes*********************/
 #define LOG_ROOT_DIR_WAIT_TIME  1000
 #define LOG_ROOT_DIR_WAIT_COUNT 1
-#define BLACKBOX_TASK_STACK_SIZE 0x1000
 
 /******************local prototypes******************/
 struct BBoxOps {
@@ -307,17 +306,13 @@ __out:
 
 static void BBoxInit(void)
 {
-    osThreadAttr_t taskAttr = {
-        "BlackBoxTask", 0, NULL, 0, NULL, BLACKBOX_TASK_STACK_SIZE, osPriorityNormal, 0, 0
-    };
-
     g_opsListSem = osSemaphoreNew(1, 1, NULL);
     if (g_opsListSem == NULL) {
         BBOX_PRINT_ERR("Create binary semaphore failed!\n");
         return;
     }
     UtilsListInit(&g_opsList);
-    if (osThreadNew(SaveErrorLog, NULL, &taskAttr) == NULL) {
+    if (osThreadNew(SaveErrorLog, NULL, NULL) == NULL) {
         BBOX_PRINT_ERR("Falied to create SaveErrorLog task\n");
     }
 }
