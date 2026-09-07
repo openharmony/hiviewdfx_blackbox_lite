@@ -16,9 +16,9 @@
 #include "blackbox.h"
 #include "blackbox_adapter.h"
 #include "blackbox_detector.h"
+#include "cmsis_os2.h"
 #include "ohos_init.h"
 #include "ohos_types.h"
-#include "cmsis_os2.h"
 #include "securec.h"
 #include "utils_list.h"
 
@@ -313,7 +313,7 @@ static void BBoxInit(void)
     }
     UtilsListInit(&g_opsList);
     if (osThreadNew(SaveErrorLog, NULL, NULL) == NULL) {
-        BBOX_PRINT_ERR("Falied to create SaveErrorLog task\n");
+        BBOX_PRINT_ERR("Failed to create SaveErrorLog task!\n");
     }
 }
 CORE_INIT_PRI(BBoxInit, 1);
