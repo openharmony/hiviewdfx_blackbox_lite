@@ -25,6 +25,7 @@
 /******************local macroes*********************/
 #define LOG_ROOT_DIR_WAIT_TIME  1000
 #define LOG_ROOT_DIR_WAIT_COUNT 1
+#define MS_PER_SECOND           1000
 
 /******************local prototypes******************/
 struct BBoxOps {
@@ -95,7 +96,7 @@ static void WaitForLogRootDir(const char *rootDir)
     }
     BBOX_PRINT_INFO("wait for log root dir [%s] begin!\n", rootDir);
     while (i++ < LOG_ROOT_DIR_WAIT_COUNT) {
-        osDelay(LOG_ROOT_DIR_WAIT_TIME * osKernelGetTickFreq() / 1000);
+        osDelay(LOG_ROOT_DIR_WAIT_TIME * osKernelGetTickFreq() / MS_PER_SECOND);
     }
     BBOX_PRINT_INFO("wait for log root dir [%s] end!\n", rootDir);
 }
@@ -160,7 +161,7 @@ static void SaveErrorLog(void *param)
             if (ops->ops.GetLastLogInfo(info) != 0) {
                 BBOX_PRINT_ERR("[%s] failed to get log info!\n",
                     ops->ops.module);
-                    continue;
+                continue;
             }
             BBOX_PRINT_INFO("[%s] starts saving log!\n", ops->ops.module);
             if (ops->ops.SaveLastLog(dirName, info) != 0) {
