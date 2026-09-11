@@ -23,7 +23,9 @@
                 "utils_lite",
                 "liteos_m"
             ],
-            "third_party": []
+            "third_party": [
+                "cmsis"
+            ]
         },
         "build": {
             "sub_component": [
