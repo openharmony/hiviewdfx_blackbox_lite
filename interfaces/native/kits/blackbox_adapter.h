@@ -38,11 +38,6 @@ extern int FullWriteFile(const char *filePath, const char *buf, unsigned int buf
 extern char *GetFaultLogPath(void);
 extern void RebootSystem(void);
 
-/* The following functions have been implemented in the kernel */
-extern unsigned int LOS_BinarySemCreate(unsigned short count, unsigned int *semHandle);
-extern unsigned int LOS_SemPend(unsigned int semHandle, unsigned int timeout);
-extern unsigned int LOS_SemPost(unsigned int semHandle);
-
 #ifdef __cplusplus
 #if __cplusplus
 }
